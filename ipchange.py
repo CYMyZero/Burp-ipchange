@@ -1,7 +1,3 @@
-# AUTHOR: Dave Yesland @daveysec, Rhino Security Labs @rhinosecurity
-# Burp Suite extension which uses AWS API Gateway to change your IP on every request to bypass IP blocking.
-# More Info: https://rhinosecuritylabs.com/aws/bypassing-ip-based-blocking-aws/
-
 from javax.swing import JPanel, JTextField, JButton, JLabel, BoxLayout, JRadioButton, ButtonGroup, BorderFactory
 from burp import IBurpExtender, IExtensionStateListener, ITab, IHttpListener
 #from java.awt import GridLayout
@@ -54,6 +50,7 @@ class BurpExtender(IBurpExtender, IExtensionStateListener, ITab, IHttpListener):
         self.list_proxy(self,event)
         self.isEnabled = True
         self.enable_button.setEnabled(False)
+        self.failremove.setEnabled(False)
         self.sleep.setEnabled(False)
         self.proxylist.setEnabled(False)
         self.target_host.setEnabled(False)
@@ -64,6 +61,7 @@ class BurpExtender(IBurpExtender, IExtensionStateListener, ITab, IHttpListener):
     def disableGateway(self, event):
         self.isEnabled = False
         self.enable_button.setEnabled(True)
+        self.failremove.setEnabled(True)
         self.sleep.setEnabled(True)
         self.proxylist.setEnabled(True)
         self.target_host.setEnabled(True)
@@ -84,12 +82,13 @@ class BurpExtender(IBurpExtender, IExtensionStateListener, ITab, IHttpListener):
             httpService = messageInfo.getHttpService()
             #
             for i in range(0,len(self.listdl)-1):
-                if self.listdl[i][1]>10:
+                if self.listdl[i][1]>self.failremove.text:
                     del self.listdl[i]
             #
             if(len(self.listdl)<1):
                 host=[]
                 host.append(self.target_host.text)
+                host.append(1)
                 self.listdl.append(host)
             if self.https_button.isSelected() == True:
                 ssl= True
@@ -128,7 +127,8 @@ class BurpExtender(IBurpExtender, IExtensionStateListener, ITab, IHttpListener):
 
             print(self.listdl)
         else:
-            self.listdl[self.num][1]-=1
+            if self.isEnabled:
+                self.listdl[self.num][1]-=1
     # Tab name
     def getTabCaption(self):
         return EXT_NAME
@@ -157,6 +157,16 @@ class BurpExtender(IBurpExtender, IExtensionStateListener, ITab, IHttpListener):
         self.sleep_panel.add(JLabel('Sleep(s): '))
         self.sleep = JTextField('0', 25)
         self.sleep_panel.add(self.sleep)
+
+
+        self.failremove_panel = JPanel()
+        self.main.add(self.failremove_panel)
+        self.failremove_panel.setLayout(
+            BoxLayout(self.failremove_panel, BoxLayout.X_AXIS))
+        self.failremove_panel.add(JLabel('fail remove(freq): '))
+        self.failremove = JTextField('5', 25)
+        self.failremove_panel.add(self.failremove)
+
 
         self.target_host_panel = JPanel()
         self.main.add(self.target_host_panel)
