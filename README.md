@@ -18,3 +18,6 @@
 
 ### target host 直接使用单个http代理(使用这个需要请空列表文件file_path)
 ### target protocol http代理类型
+
+
+## 借鉴IPRotate_Burp_Extension开发,环境插件等配置可查看原文档(https://github.com/RhinoSecurityLabs/IPRotate_Burp_Extension)
