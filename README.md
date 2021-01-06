@@ -16,5 +16,5 @@
 
 ### sleep    请求延迟
 
-### target host 直接使用单个http代理 （使用这个需要请空列表文件file_path）
+### target host 直接使用单个http代理(使用这个需要请空列表文件file_path)
 ### target protocol http代理类型
